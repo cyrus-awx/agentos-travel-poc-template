@@ -1,114 +1,89 @@
-# AgentOS travel booking PoC (Agentic commerce)
+# AgentOS agentic-commerce PoC — book & pay inside an AI assistant
 
-This repo is a **template** for an AI-assisted travel booking flow that creates an Airwallex **payment link** and sends the traveller to the Airwallex checkout.
+A minimal template demonstrating how a merchant (for example, an online travel agency) lets travellers **book and pay directly inside an AI assistant** — Claude, ChatGPT, Gemini, Cursor, or a custom assistant — using **Airwallex AgentOS** (a hosted MCP server).
 
-It demonstrates the core “quote → payment link → checkout” path you can wire into an AI assistant (Claude / Cursor / ChatGPT connector / Gemini connector).
+There is no web app here on purpose. The AI assistant is the UI. The assistant calls the AgentOS `create_payment_link` tool, the traveller gets a payment link in the conversation, and pays on the Airwallex-hosted checkout. Funds settle to the merchant's Airwallex account with native FX.
 
-## About
+```
+Traveller: "I want a 6-night trip to Lisbon in October for 2 people, around $1,200"
+    │
+    ▼
+AI assistant (connected to the merchant's Airwallex account via AgentOS)
+    │  calls create_payment_link(title, amount, currency, ...)
+    ▼
+Airwallex AgentOS MCP server
+    │  creates the hosted checkout
+    ▼
+Traveller taps the link in the chat and pays on the Airwallex checkout
+    │
+    ▼
+Money lands in the merchant's Airwallex account
+```
 
-This template is designed to help teams prove out an agentic-commerce flow for travel and bookings. It is intentionally scoped to the smallest working demo: quote creation, payment-link generation, and checkout handoff.
+## What's in this repo
 
-## Use this repo as a template
+- `.mcp.json` — MCP client config snippet for Claude Code / Cursor pointing at the AgentOS sandbox server.
+- `docs/demo-script.md` — a step-by-step demo script: connect the client, then paste prompts that drive the booking-to-payment flow.
+- `scripts/create-payment-link.mjs` — a tiny headless MCP client that authenticates and calls `create_payment_link`, for demos without installing Claude Desktop.
 
-1. Click **Use this template** on GitHub to create your own repo.
-2. Copy the repo locally.
-3. Set the environment variables in `.env.example` and run it.
+## What it deliberately does not include
 
-> Note: this template is intentionally small. It does not implement the full booking engine, availability, or itinerary management.
+- No booking engine, inventory, or itinerary management.
+- No merchant-side web backend. The payment tool call happens in the AI client, not in your server.
+- No native in-chat card fields. The last payment step is the Airwallex-hosted checkout, opened from the conversation.
 
-## What it does
-
-1. Collects a trip quote request (destination, dates, travellers, amount, currency).
-2. Calls a server route that creates an Airwallex payment link.
-3. Optionally sends the hosted link via the “notify shopper” call when you provide an email.
-4. Redirects the browser to the returned checkout URL.
-
-## Live demo
-
-Not included in this template. Deploy it (see below) if you want a clickable demo.
+For native checkout embedded inside ChatGPT or Gemini's own UI (ACP / AP2), that is a separate, program-gated path — see the notes in `docs/demo-script.md`.
 
 ## Quickstart
 
-### 1) Create sandbox credentials
+### 1. Get sandbox credentials
 
-Create sandbox API credentials in Airwallex sandbox:
-https://demo.airwallex.com/signup/sandbox
+Create a free Airwallex sandbox account: <https://demo.airwallex.com/signup/sandbox>
 
-Fill in `.env.example` (or copy it to `.env`).
+### 2. Connect your AI client to AgentOS
 
-### 2) Install + run locally
+Use the config in `.mcp.json` as a starting point. The sandbox AgentOS endpoint is:
+
+```
+https://mcp.sandbox.airwallex.com/developer
+```
+
+On first connection the client opens a browser for OAuth against your Airwallex sandbox account. After that, the tools are available in the conversation.
+
+### 3. Run the demo
+
+Follow `docs/demo-script.md`. Short version — paste this into the assistant:
+
+> I'm a traveller. I'd like to book a 6-night trip to Lisbon in October for 2 people, total around 1200 USD. Create a payment link so I can pay.
+
+The assistant should call `create_payment_link` with `title`, `amount`, `currency`, and return a checkout URL in the chat.
+
+### 4. Headless demo (optional)
+
+For a scripted run without an interactive assistant:
 
 ```bash
 npm install
-npm run dev
+node scripts/create-payment-link.mjs
 ```
 
-Then open:
+The script connects to the sandbox AgentOS server with OAuth and calls `create_payment_link` with a sample trip.
 
-- http://localhost:3000
+## The tool
 
-### 3) Run tests
+`create_payment_link` accepts (among others):
 
-```bash
-npm test
-npm run test:all
-```
+- `title` (required) — checkout page title
+- `amount` + `currency` — fixed pricing, major currency units (e.g. `1200.50`, `USD`)
+- `default_currency` + `supported_currencies` — flexible pricing instead
+- `description`, `reference`, `reusable`, `expires_at`, `metadata`
+- `shopper_email` — emails the link to the traveller (omit unless the traveller gave their email; never invent one)
 
-## Environment variables
+The tool returns the upstream Payment Links response as JSON, including the checkout `url`.
 
-Copy `.env.example` to `.env`.
+## Use this repo as a template
 
-Required:
-
-- `AIRWALLEX_SANDBOX_CLIENT_ID`
-- `AIRWALLEX_SANDBOX_API_KEY`
-
-Optional:
-
-- `AIRWALLEX_BASE_URL` (override for the Airwallex API base URL; defaults to `https://api-demo.airwallex.com`)
-
-## Key implementation
-
-### Trip input validation
-
-- `src/lib/trip-input.ts` defines `tripInputSchema` (Zod).
-
-### Building the payment-link payload
-
-- `src/lib/payment-link-payload.ts` defines `buildPaymentLinkPayload()`.
-
-### Creating the payment link
-
-- `src/app/api/payment-links/route.ts`
-  - parses JSON
-  - validates input
-  - logs into Airwallex sandbox
-  - calls `POST /api/v1/pa/payment_links/create`
-  - optionally calls `/notify_shopper`
-  - returns `{ success, data, error }`
-
-## How an AI assistant uses this flow
-
-This template is a **web demo**, not an MCP client implementation.
-
-To make it “agentic”:
-
-- Your AI assistant collects the trip details.
-- It then calls a tool that triggers payment-link creation.
-
-If you want the MCP-native version of this flow, point your MCP-capable AI client at the hosted Airwallex AgentOS MCP server and call the `create_payment_link` tool.
-
-Tool name:
-- `create_payment_link`
-
-Sandbox MCP endpoint (documented in the internal AgentOS MCP repo):
-- `https://mcp.sandbox.airwallex.com/developer`
-
-## Why this repo is safe to copy
-
-- No credentials are shipped in the template.
-- The server route validates all input before calling Airwallex.
-- The “notify shopper” flow is separate from link creation.
+Click **Use this template** on GitHub, clone your copy, and adapt `docs/demo-script.md` and the sample trip in the script to your own product.
 
 ## License
 

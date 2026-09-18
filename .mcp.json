@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "airwallex-agentos-sandbox": {
+      "type": "url",
+      "url": "https://mcp.sandbox.airwallex.com/developer",
+      "note": "Airwallex AgentOS MCP server (sandbox). First connection triggers OAuth login against your Airwallex sandbox account. For production use https://mcp.airwallex.com/mcp with your production account."
+    }
+  }
+}

@@ -2,28 +2,12 @@
   "name": "agentos-travel-poc",
   "private": true,
   "version": "0.1.0",
-  "description": "Template repo for an AI-assisted travel booking PoC using Airwallex payment links.",
+  "description": "Template PoC: book and pay inside AI assistants via the Airwallex AgentOS MCP server.",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:e2e": "playwright test --pass-with-no-tests",
-    "test:all": "npm run typecheck && npm test && npm run test:e2e"
+    "demo": "node scripts/create-payment-link.mjs"
   },
   "dependencies": {
-    "next": "16.3.5",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "zod": "4.6.5"
-  },
-  "devDependencies": {
-    "@playwright/test": "1.63.0",
-    "@types/node": "26.6.1",
-    "@types/react": "19.3.0",
-    "@types/react-dom": "19.3.0",
-    "typescript": "5.9.3",
-    "vitest": "5.0.1"
+    "@modelcontextprotocol/sdk": "1.30.0"
   }
 }
