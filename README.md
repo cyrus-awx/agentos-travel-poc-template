@@ -4,6 +4,12 @@ This repo is a **template** for an AI-assisted travel booking flow that creates 
 
 It demonstrates the core “quote → payment link → checkout” path you can wire into an AI assistant (Claude / Cursor / ChatGPT connector / Gemini connector).
 
+## Use this repo as a template
+
+1. Click **Use this template** on GitHub to create your own repo.
+2. Copy the repo locally.
+3. Set the environment variables in `.env.example` and run it.
+
 > Note: this template is intentionally small. It does not implement the full booking engine, availability, or itinerary management.
 
 ## What it does
