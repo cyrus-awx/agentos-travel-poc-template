@@ -4,6 +4,10 @@ This repo is a **template** for an AI-assisted travel booking flow that creates 
 
 It demonstrates the core “quote → payment link → checkout” path you can wire into an AI assistant (Claude / Cursor / ChatGPT connector / Gemini connector).
 
+## About
+
+This template is designed to help teams prove out an agentic-commerce flow for travel and bookings. It is intentionally scoped to the smallest working demo: quote creation, payment-link generation, and checkout handoff.
+
 ## Use this repo as a template
 
 1. Click **Use this template** on GitHub to create your own repo.
@@ -98,7 +102,7 @@ Tool name:
 - `create_payment_link`
 
 Sandbox MCP endpoint (documented in the internal AgentOS MCP repo):
-- `https://mcp-staging.airwallex.com/developer`
+- `https://mcp.sandbox.airwallex.com/developer`
 
 ## Why this repo is safe to copy
 
