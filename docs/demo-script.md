@@ -4,7 +4,7 @@ This script walks through the agentic-commerce flow for a travel merchant. It as
 
 ## Setup (one time, ~5 minutes)
 
-1. Create an Airwallex **sandbox** account: https://demo.airwallex.com/signup/sandbox
+1. Create an Airwallex **sandbox** account: https://www.sandbox.airwallex.com/app/login/sandbox
 2. Point your MCP-capable client at the AgentOS sandbox server using the `.mcp.json` in this repo:
    - Claude Code: `claude mcp add-json airwallex-agentos-sandbox '{"type":"url","url":"https://mcp.sandbox.airwallex.com/developer"}'`
    - Cursor: add the same entry in Cursor's MCP settings

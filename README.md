@@ -38,7 +38,7 @@ For native checkout embedded inside ChatGPT or Gemini's own UI (ACP / AP2), that
 
 ### 1. Get sandbox credentials
 
-Create a free Airwallex sandbox account: <https://demo.airwallex.com/signup/sandbox>
+Create a free Airwallex sandbox account: <https://www.sandbox.airwallex.com/app/login/sandbox>
 
 ### 2. Connect your AI client to AgentOS
 
